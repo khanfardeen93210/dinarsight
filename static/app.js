@@ -1,5 +1,4 @@
-// ✅ Relative API path (works locally, on Render, and in APK)
-const API_URL = "/predict";
+const API_URL = "https://dinarsight.onrender.com/predict";
 
 let currentAudio = null;
 
