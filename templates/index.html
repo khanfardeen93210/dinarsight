@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>DinarSight – Iraqi Currency Recognition</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#22c55e">
+
+    <!-- SEO & Accessibility -->
+    <meta name="description"
+          content="DinarSight helps visually impaired users recognize Iraqi currency denominations using AI.">
+
+    <!-- PWA -->
+    <link rel="manifest" href="/static/manifest.json">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<main class="app-container" role="main">
+
+    <header>
+        <h1 class="app-title">DinarSight</h1>
+        <p class="app-subtitle">AI-powered Iraqi Currency Recognition</p>
+    </header>
+
+    <section class="upload-section" aria-label="Image input options">
+
+        <!-- Upload from Gallery -->
+        <input
+            type="file"
+            id="imageInput"
+            accept="image/*"
+            hidden
+            aria-hidden="true">
+
+        <!-- Camera Capture -->
+        <input
+            type="file"
+            id="cameraInput"
+            accept="image/*"
+            capture="environment"
+            hidden
+            aria-hidden="true">
+
+        <button class="secondary-btn"
+                onclick="openGallery()"
+                aria-label="Upload currency image from gallery">
+            📁 Upload from Gallery
+        </button>
+
+        <button class="camera-btn"
+                onclick="openCamera()"
+                aria-label="Capture currency image using camera">
+            📷 Camera
+        </button>
+
+    </section>
+
+    <button class="action-btn"
+            onclick="recognizeCurrency()"
+            aria-label="Recognize Iraqi currency denomination">
+        Recognize Currency
+    </button>
+
+    <section class="result-section"
+             aria-live="polite"
+             aria-atomic="true">
+        <p id="resultText">Waiting for input…</p>
+        <p id="confidenceText"></p>
+    </section>
+
+</main>
+
+<!-- Scripts -->
+<script src="/static/app.js"></script>
+
+<script>
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+            navigator.serviceWorker
+                .register("/static/service-worker.js")
+                .then(() => console.log("Service Worker registered"))
+                .catch(err => console.error("Service Worker failed", err));
+        });
+    }
+</script>
+
+</body>
+</html>
