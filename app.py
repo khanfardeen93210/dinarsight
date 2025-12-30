@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import tensorflow.keras as keras
 import numpy as np
@@ -20,6 +20,11 @@ with open(LABELS_PATH, "r") as f:
 @app.route("/", methods=["GET"])
 def home():
     return "DinarSight Backend is running", 200
+
+# 👉 Frontend UI route
+@app.route("/app")
+def frontend():
+    return render_template("index.html")
 
 @app.route("/predict", methods=["POST"])
 def predict():
