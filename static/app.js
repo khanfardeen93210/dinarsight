@@ -1,6 +1,7 @@
 const API_URL = "https://dinarsight.onrender.com/predict";
 
 let currentAudio = null;
+let scanning = false;
 
 /* -------------------------
    English fallback TTS
@@ -36,81 +37,94 @@ function playAudio(fileName, fallbackText = null) {
 }
 
 /* -------------------------
-   Image Input Actions
+   Auto Camera Start
 -------------------------- */
-function openGallery() {
-    document.getElementById("imageInput").click();
-    playAudio("gallery.mp3", "Opening gallery.");
-}
+async function startCamera() {
+    const video = document.getElementById("video");
 
-function openCamera() {
-    document.getElementById("cameraInput").click();
-    playAudio("camera.mp3", "Opening camera.");
+    try {
+        playAudio("camera.mp3", "Opening camera");
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "environment" }
+        });
+
+        video.srcObject = stream;
+
+        // Start scanning after 3 seconds
+        setTimeout(scanFrame, 3000);
+
+    } catch (err) {
+        console.error(err);
+        playAudio("error.mp3", "Camera access denied.");
+    }
 }
 
 /* -------------------------
-   Currency Recognition
+   Capture & Send Frame
 -------------------------- */
-async function recognizeCurrency() {
-    const uploadInput = document.getElementById("imageInput");
-    const cameraInput = document.getElementById("cameraInput");
+async function scanFrame() {
+    if (scanning) return;
+    scanning = true;
 
-    const file =
-        cameraInput.files.length > 0
-            ? cameraInput.files[0]
-            : uploadInput.files[0];
-
-    if (!file) {
-        playAudio("error.mp3", "Please upload or capture an image.");
-        return;
-    }
-
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
     const resultText = document.getElementById("resultText");
     const confidenceText = document.getElementById("confidenceText");
 
-    resultText.innerText = "Recognizing currency...";
+    const context = canvas.getContext("2d");
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    context.drawImage(video, 0, 0);
+
+    resultText.innerText = "Scanning...";
     confidenceText.innerText = "";
 
-    const formData = new FormData();
-    formData.append("image", file);
+    canvas.toBlob(async (blob) => {
 
-    try {
-        const response = await fetch(API_URL, {
-            method: "POST",
-            body: formData
-        });
+        const formData = new FormData();
+        formData.append("image", blob);
 
-        if (!response.ok) {
-            throw new Error("Server error");
+        try {
+            const response = await fetch(API_URL, {
+                method: "POST",
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error("Server error");
+            }
+
+            const data = await response.json();
+            const value = data.denomination.replace("IQD_", "");
+
+            resultText.innerText = `Denomination: ${value} IQD`;
+            confidenceText.innerText = `Confidence: ${data.confidence}%`;
+
+            if (data.confidence < 70) {
+                playAudio("error.mp3", "Currency could not be recognized clearly.");
+            } else {
+                playAudio(`${value}.mp3`, `This is ${value} Iraqi dinar`);
+            }
+
+        } catch (error) {
+            console.error(error);
+            playAudio("error.mp3", "Unable to reach the server.");
         }
 
-        const data = await response.json();
-        const value = data.denomination.replace("IQD_", "");
+        scanning = false;
 
-        resultText.innerText = `Denomination: ${value} IQD`;
-        confidenceText.innerText = `Confidence: ${data.confidence}%`;
+        // Scan again after 5 seconds
+        setTimeout(scanFrame, 5000);
 
-        if (data.confidence < 70) {
-            playAudio("error.mp3", "Currency could not be recognized clearly.");
-            return;
-        }
-
-        playAudio(`${value}.mp3`, `This is ${value} Iraqi dinar`);
-
-    } catch (error) {
-        console.error(error);
-        playAudio("error.mp3", "Unable to reach the server.");
-    }
+    }, "image/jpeg");
 }
 
 /* -------------------------
-   Service Worker
+   Start App Automatically
 -------------------------- */
-if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-        navigator.serviceWorker
-            .register("/static/service-worker.js")
-            .then(() => console.log("Service Worker registered"))
-            .catch(err => console.error("Service Worker failed", err));
-    });
-}
+window.addEventListener("load", () => {
+    startCamera();
+});

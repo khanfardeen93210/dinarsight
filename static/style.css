@@ -6,125 +6,147 @@
     --accent: #22c55e;
 }
 
+/* -------------------------
+   Global Reset
+-------------------------- */
 * {
     box-sizing: border-box;
     font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 
-/* -------------------------
-   Base Layout
--------------------------- */
 body {
     margin: 0;
     background: var(--bg-color);
     color: var(--text-color);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    overflow: hidden;
 }
 
 /* -------------------------
-   App Container
+   App Container (Full Screen Now)
 -------------------------- */
 .app-container {
-    background: var(--card-color);
-    padding: 2rem;
-    border-radius: 16px;
-    width: 90%;
-    max-width: 420px;
-    text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-}
-
-/* -------------------------
-   Typography
--------------------------- */
-.app-title {
-    font-size: 2.2rem;
-    margin-bottom: 0.3rem;
-}
-
-.app-subtitle {
-    font-size: 1rem;
-    color: #e2e8f0; /* improved contrast */
-    margin-bottom: 1.5rem;
-}
-
-/* -------------------------
-   Buttons
--------------------------- */
-.action-btn {
+    position: relative;
     width: 100%;
-    padding: 1rem;
-    font-size: 1.2rem;
-    background: var(--primary);
-    border: none;
-    border-radius: 10px;
-    color: #020617;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background 0.2s ease;
-}
-
-.action-btn:hover {
-    background: #0ea5e9;
-}
-
-.secondary-btn {
-    width: 100%;
-    padding: 1rem;
-    font-size: 1.1rem;
-    background: #334155;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition: background 0.2s ease;
-}
-
-.secondary-btn:hover {
-    background: #475569;
-}
-
-.camera-btn {
-    width: 100%;
-    padding: 1.1rem;
-    font-size: 1.3rem;
-    background: var(--accent);
-    color: #022c22;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: bold;
-    margin-bottom: 18px;
-    transition: background 0.2s ease;
-}
-
-.camera-btn:hover {
-    background: #16a34a;
+    height: 100vh;
 }
 
 /* -------------------------
-   Focus Accessibility
+   Camera Section
 -------------------------- */
-button:focus-visible {
-    outline: 3px solid var(--primary);
-    outline-offset: 3px;
+.camera-section {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 /* -------------------------
-   Results
+   Scan Overlay
+-------------------------- */
+.scan-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 280px;
+    height: 150px;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+/* Corner Brackets */
+.corner {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 5px solid var(--accent);
+}
+
+/* Top Left */
+.top-left {
+    top: 0;
+    left: 0;
+    border-right: none;
+    border-bottom: none;
+}
+
+/* Top Right */
+.top-right {
+    top: 0;
+    right: 0;
+    border-left: none;
+    border-bottom: none;
+}
+
+/* Bottom Left */
+.bottom-left {
+    bottom: 0;
+    left: 0;
+    border-right: none;
+    border-top: none;
+}
+
+/* Bottom Right */
+.bottom-right {
+    bottom: 0;
+    right: 0;
+    border-left: none;
+    border-top: none;
+}
+
+/* -------------------------
+   Animated Scan Line
+-------------------------- */
+.scan-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: red;
+    animation: scan 2s linear infinite;
+}
+
+@keyframes scan {
+    0% { top: 0; }
+    100% { top: 100%; }
+}
+
+/* -------------------------
+   Dark Focus Overlay Effect
+-------------------------- */
+.camera-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        rectangle at center,
+        transparent 120px,
+        rgba(0, 0, 0, 0.6) 250px
+    );
+    pointer-events: none;
+}
+
+/* -------------------------
+   Results (Bottom Display)
 -------------------------- */
 .result-section {
-    margin-top: 1.5rem;
-    font-size: 1.2rem;
+    position: absolute;
+    bottom: 40px;
+    width: 100%;
+    text-align: center;
+    font-size: 1.3rem;
+    z-index: 5;
 }
 
 #resultText {
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     color: var(--accent);
+    font-weight: bold;
 }
 
 #confidenceText {
@@ -137,6 +159,7 @@ button:focus-visible {
 -------------------------- */
 @media (prefers-reduced-motion: reduce) {
     * {
+        animation: none !important;
         transition: none !important;
     }
 }
