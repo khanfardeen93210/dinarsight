@@ -1,36 +1,36 @@
-const CACHE_NAME = "dinarsight-v5"; // 🔄 updated version
+const CACHE_NAME = "dinarsight-v4";
 
 const STATIC_ASSETS = [
-  "/app",                        // your frontend route
-  "/static/style.css",
-  "/static/app.js",
-  "/static/manifest.json",
+  "/",
+  "/style.css",
+  "/app.js",
+  "/manifest.json",
 
   // Icons
-  "/static/icons/icon-192.png",
-  "/static/icons/icon-512.png",
+  "/icons/icon-192.png",
+  "/icons/icon-512.png",
 
   // Audio files
-  "/static/audio/welcome.mp3",
-  "/static/audio/camera.mp3",
-  "/static/audio/error.mp3",
-  "/static/audio/250.mp3",
-  "/static/audio/500.mp3",
-  "/static/audio/1000.mp3",
-  "/static/audio/5000.mp3",
-  "/static/audio/10000.mp3"
+  "/audio/welcome.mp3",
+  "/audio/gallery.mp3",
+  "/audio/camera.mp3",
+  "/audio/error.mp3",
+  "/audio/250.mp3",
+  "/audio/500.mp3",
+  "/audio/1000.mp3",
+  "/audio/5000.mp3",
+  "/audio/10000.mp3"
 ];
 
 // 🔹 Install – cache static files
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(STATIC_ASSETS))
+    caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS))
   );
   self.skipWaiting();
 });
 
-// 🔹 Activate – remove old caches
+// 🔹 Activate – clean old caches
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -46,7 +46,7 @@ self.addEventListener("activate", event => {
   self.clients.claim();
 });
 
-// 🔹 Fetch Handler
+// 🔹 Fetch handler
 self.addEventListener("fetch", event => {
   const url = event.request.url;
 

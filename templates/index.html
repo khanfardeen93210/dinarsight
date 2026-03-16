@@ -23,31 +23,54 @@
 
 <main class="app-container" role="main">
 
-    <!-- Camera Section -->
-    <section class="camera-section" aria-label="Live currency scanner">
+    <header>
+        <h1 class="app-title">DinarSight</h1>
+        <p class="app-subtitle">AI-powered Iraqi Currency Recognition</p>
+    </header>
 
-        <!-- Live Camera Preview -->
-        <video id="video" autoplay playsinline></video>
+    <section class="upload-section" aria-label="Image input options">
 
-        <!-- Hidden Canvas for Frame Capture -->
-        <canvas id="canvas" hidden></canvas>
+        <!-- Upload from Gallery -->
+        <input
+            type="file"
+            id="imageInput"
+            accept="image/*"
+            hidden
+            aria-hidden="true">
 
-        <!-- Scan Overlay -->
-        <div class="scan-overlay" aria-hidden="true">
-            <div class="corner top-left"></div>
-            <div class="corner top-right"></div>
-            <div class="corner bottom-left"></div>
-            <div class="corner bottom-right"></div>
-            <div class="scan-line"></div>
-        </div>
+        <!-- Camera Capture -->
+        <input
+            type="file"
+            id="cameraInput"
+            accept="image/*"
+            capture="environment"
+            hidden
+            aria-hidden="true">
+
+        <button class="secondary-btn"
+                onclick="openGallery()"
+                aria-label="Upload currency image from gallery">
+            📁 Upload from Gallery
+        </button>
+
+        <button class="camera-btn"
+                onclick="openCamera()"
+                aria-label="Capture currency image using camera">
+            📷 Camera
+        </button>
 
     </section>
 
-    <!-- Result Section -->
+    <button class="action-btn"
+            onclick="recognizeCurrency()"
+            aria-label="Recognize Iraqi currency denomination">
+        Recognize Currency
+    </button>
+
     <section class="result-section"
              aria-live="polite"
              aria-atomic="true">
-        <p id="resultText">Opening camera...</p>
+        <p id="resultText">Waiting for input…</p>
         <p id="confidenceText"></p>
     </section>
 
